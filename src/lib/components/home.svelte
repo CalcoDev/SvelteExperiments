@@ -7,35 +7,24 @@
 
   import SplitType from 'split-type'
 
-  let boxEnterRef;
-  let heroTitleRef;
-  
-  let navRef;
-  let footerRef;
-  
   let cursorRef;
 
+  let setCursorX;
+  let setCursorY;
+  let setCursorScale;
+
   onMount(() => {
-    const setCursorX = gsap.quickTo(cursorRef, "x", {duration: 0.3, ease: "power3"});
-    const setCursorY = gsap.quickTo(cursorRef, "y", {duration: 0.3, ease: "power3"}); 
-    
-    function handleMouseMove(e) {
-      setCursorX(e.clientX);
-      setCursorY(e.clientY);
-    }
-
-    function handleMouseDown(e) {
-      gsap.to(cursorRef, { scale: 2, duration: 0.1});
-    }
-
-    function handleMouseUp(e) {
-      gsap.to(cursorRef, { scale: 1, duration: 0.1});
-    }
+    setCursorX = gsap.quickTo(cursorRef, "x", {duration: 0.3, ease: "power3"});
+    setCursorY = gsap.quickTo(cursorRef, "y", {duration: 0.3, ease: "power3"}); 
+    setCursorScale = (scl, dur) => gsap.to(cursorRef, {duration: dur ? dur : 0.15, scale: scl, ease: "power3"});
 
     gsap.set(cursorRef, { xPercent: -50, yPercent: -50 });
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", (e) => {
+      setCursorX(e.clientX);
+      setCursorY(e.clientY);
+    });
+    document.addEventListener("mousedown", () => setCursorScale(2));
+    document.addEventListener("mouseup", () => setCursorScale(1));
 
     gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
@@ -48,34 +37,34 @@
 
     let wobbleTl = gsap.timeline();
 
-    boxTl.from(boxEnterRef, {
+    boxTl.from(".box-enter", {
       duration: 1.5,
       width: 'max(100vw, 100vh)',
       height: 'max(100vw, 100vh)',
       rotation: 180,
       ease: "bounce.out",
     })
-    boxTl.to(boxEnterRef, {
+    boxTl.to(".box-enter", {
       duration: 0.01,
       width: 0,
       height: 0,
     })
 
-    navTl.from(navRef, {
+    navTl.from("nav", {
       duration: 1,
       opacity: 0,
       y: -100,
       ease: "power4.out",
     });
 
-    footerTl.from(footerRef, {
+    footerTl.from("footer", {
       duration: 1,
       opacity: 0,
       y: 100,
       ease: "power4.out",
     });
 
-    const title = new SplitType(heroTitleRef);
+    const title = new SplitType(".hero-title");
     heroTl.from(title.chars, {
       duration: 2,
       opacity: 0,
@@ -105,59 +94,70 @@
     masterTl.add(boxTl);
     masterTl.add(heroTl);
     masterTl.add([navTl, footerTl]);
-    masterTl.add(wobbleTl)
-    masterTl.play();
     
     // Skip to the end of the animation
+    // TODO(calco): REMOVE THIS IN PRODUCTION
     masterTl.seek(masterTl.duration());
 
+    masterTl.add(wobbleTl)
+    masterTl.play();
+
     // Split all nav links into chars
-    const navLinks = navRef.querySelectorAll('a');
+    const navLinks = document.querySelector('nav').querySelectorAll('a');
     navLinks.forEach((link) => {
-      const split = new SplitType(link);
+      new SplitType(link);
     })
   });
 
-  function handleMouseEnter(e) {
-    let chars = e.path[0].querySelectorAll('.char');
+  function wobbleSelf(e) {
+    let chars = e.srcElement.querySelectorAll('.char');
+
+    // Guys this is really bad code I am sorry for any github copilot users who might get this recommendation
     gsap.to(chars, {
-      duration: 0.5,
-      y: '+=25',
+      duration: 0.75,
+      y: '-25',
       stagger: 0.1,
       ease: "power4.out",
     })
+    gsap.delayedCall(0.1, () => {
+      gsap.to(chars, {
+        duration: 0.75,
+        y: '0',
+        stagger: 0.1,
+        ease: "elastic.out(1, 0.3)",
+      })
+    })
   }
 
-  // function handleMouseLeave(e) {
-  //   let chars = e.path[0].querySelectorAll('.char');
-  //   gsap.to(chars, {
-  //     duration: 0.5,
-  //     y: '0',
-  //     stagger: 0.1,
-  //     ease: "power4.out",
-  //   })
-  // }
+  function navLinkMouseEnter(e) {
+    wobbleSelf(e);
+    setCursorScale(3);
+  }
+
+  function navLinkMouseLeave(e) {
+    setCursorScale(1);
+  }
 </script>
 
 <div class="cursor" bind:this={cursorRef}></div>
 
-<div class="box-enter" bind:this={boxEnterRef}></div>
+<div class="box-enter"></div>
 <section class="content">
-  <nav bind:this={navRef}>
+  <nav>
     <ul>
-      <li><a href="/" on:mouseenter={handleMouseEnter}>Home</a></li>
-      <li><a href="/about">About</a></li>
-      <li><a href="/contact">Contact</a></li>
+      <li><a href="/" on:mouseenter={navLinkMouseEnter} on:mouseleave={navLinkMouseLeave}>Home</a></li>
+      <li><a href="/about" on:mouseenter={navLinkMouseEnter} on:mouseleave={navLinkMouseLeave}>About</a></li>
+      <li><a href="/contact" on:mouseenter={navLinkMouseEnter} on:mouseleave={navLinkMouseLeave}>Contact</a></li>
     </ul>
   </nav>
 
   <main>
     <section class="section-hero">
-      <h1 class="hero-title" bind:this={heroTitleRef}>CALCO.DEV</h1>
+      <h1 class="hero-title">CALCO.DEV</h1>
     </section>
   </main>
 
-  <footer bind:this={footerRef}>
+  <footer>
     <span>made by <strong>Calcopod</strong></span>
   </footer>
 </section>
