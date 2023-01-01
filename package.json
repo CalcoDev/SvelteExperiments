@@ -19,6 +19,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"gsap": "^3.11.4"
+		"gsap": "^3.11.4",
+		"split-type": "^0.3.3"
 	}
 }

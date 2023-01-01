@@ -1,47 +1,50 @@
 <script>
   import { gsap } from "gsap";
   import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { TextPlugin } from "gsap/TextPlugin";
+
 	import { onMount } from "svelte";
 
-  let one, two, three;
+  import SplitType from 'split-type'
 
   onMount(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    let xOne = one.getBoundingClientRect().x;
-    let xTwo = two.getBoundingClientRect().x;
-    let xThree = three.getBoundingClientRect().x;
-
-    let width = 100;
-    let height = 100;
-
-    let dAB = xTwo - xOne;
-    let dBC = xTwo - xThree;
+    gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
     let tl = gsap.timeline();
-    tl.from(".one", { rotate: 360, scale: 0, duration: 1}, 0 );
-    tl.from(".two", { rotate: 180, scale: 0, duration: 1}, 0 );
-    tl.from(".three", { rotate: 470, scale: 0, duration: 1}, 0 );
 
-    tl.to(".one", { duration: 1, x: dAB - width});
-    tl.to(".three", { duration: 1, x: dBC + width});
-    
-    tl.to(".box", { duration: 1, y: -window.innerHeight * 0.5 + height, opacity: 0 });
+    tl.delay(0.5);
+    tl.from(".box", {
+      duration: 1.5,
+      width: 'max(100vw, 100vh)',
+      height: 'max(100vw, 100vh)',
+      ease: "bounce.out",
+      rotate: 180,
+    })
+
+    const title = new SplitType(".title");
+
+    tl.play();
   });
 </script>
 
 <section class="content">
-  <div class="box one" bind:this={one}></div>
-  <div class="box two" bind:this={two}></div>
-  <div class="box three" bind:this={three}></div>
+  <div class="box"></div>
+
+  <h1 class="title">CALCO.DEV</h1>
 </section>
 
 <style>
   .box {
-    width: 100px;
-    height: 100px;
-
     background-color: #fff; 
+    position: absolute;
+  }
+
+  .title {
+    color: #fff;
+    font-size: 5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5rem;
   }
 
   .content {
