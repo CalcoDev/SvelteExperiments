@@ -107,9 +107,37 @@
     masterTl.add([navTl, footerTl]);
     masterTl.add(wobbleTl)
     masterTl.play();
-  });
-</script>
+    
+    // Skip to the end of the animation
+    masterTl.seek(masterTl.duration());
 
+    // Split all nav links into chars
+    const navLinks = navRef.querySelectorAll('a');
+    navLinks.forEach((link) => {
+      const split = new SplitType(link);
+    })
+  });
+
+  function handleMouseEnter(e) {
+    let chars = e.path[0].querySelectorAll('.char');
+    gsap.to(chars, {
+      duration: 0.5,
+      y: '+=25',
+      stagger: 0.1,
+      ease: "power4.out",
+    })
+  }
+
+  // function handleMouseLeave(e) {
+  //   let chars = e.path[0].querySelectorAll('.char');
+  //   gsap.to(chars, {
+  //     duration: 0.5,
+  //     y: '0',
+  //     stagger: 0.1,
+  //     ease: "power4.out",
+  //   })
+  // }
+</script>
 
 <div class="cursor" bind:this={cursorRef}></div>
 
@@ -117,7 +145,7 @@
 <section class="content">
   <nav bind:this={navRef}>
     <ul>
-      <li><a href="/">Home</a></li>
+      <li><a href="/" on:mouseenter={handleMouseEnter}>Home</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/contact">Contact</a></li>
     </ul>
