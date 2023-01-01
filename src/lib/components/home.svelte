@@ -129,13 +129,25 @@
     })
   }
 
+  function enlargeCursor(scl) {
+    setCursorScale(typeof scl === 'number' ? scl : 2);
+  }
+
+  function resetCursor() {
+    setCursorScale(1);
+  }
+
+  function shrinkCursor(scl) {
+    setCursorScale(typeof scl === 'number' ? scl : 0.5);
+  }
+
   function navLinkMouseEnter(e) {
     wobbleSelf(e);
-    setCursorScale(3);
+    enlargeCursor();
   }
 
   function navLinkMouseLeave(e) {
-    setCursorScale(1);
+    resetCursor();
   }
 </script>
 
@@ -153,12 +165,12 @@
 
   <main>
     <section class="section-hero">
-      <h1 class="hero-title">CALCO.DEV</h1>
+      <h1 class="hero-title" on:mouseenter={enlargeCursor} on:mouseleave={resetCursor}>CALCO.DEV</h1>
     </section>
   </main>
 
   <footer>
-    <span>made by <strong>Calcopod</strong></span>
+    <span on:mouseenter={enlargeCursor} on:mouseleave={resetCursor}>made by <strong>Calcopod</strong></span>
   </footer>
 </section>
 
