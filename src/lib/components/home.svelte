@@ -9,6 +9,8 @@
 
   let cursorRef;
 
+  let cursorY;
+
   let setCursorX;
   let setCursorY;
   let setCursorScale;
@@ -18,11 +20,21 @@
     setCursorY = gsap.quickTo(cursorRef, "y", {duration: 0.3, ease: "power3"}); 
     setCursorScale = (scl, dur) => gsap.to(cursorRef, {duration: dur ? dur : 0.15, scale: scl, ease: "power3"});
 
+    function updateMousePos(e) {
+      if (e.type === 'scroll') {
+        setCursorY(cursorY + window.scrollY);
+        return;
+      }
+      else if (e.type === 'mousemove') {
+        setCursorX(e.clientX);
+        setCursorY(e.clientY + window.scrollY);
+        cursorY = e.clientY;
+      }
+    }
+
     gsap.set(cursorRef, { xPercent: -50, yPercent: -50 });
-    document.addEventListener("mousemove", (e) => {
-      setCursorX(e.clientX);
-      setCursorY(e.clientY);
-    });
+    document.addEventListener("mousemove", updateMousePos);
+    document.addEventListener("scroll", updateMousePos);
     document.addEventListener("mousedown", () => setCursorScale(2));
     document.addEventListener("mouseup", () => setCursorScale(1));
 
@@ -149,30 +161,56 @@
   function navLinkMouseLeave(e) {
     resetCursor();
   }
+
+  let scrollYVal;
 </script>
 
+<svelte:window bind:scrollY={scrollYVal} />
+
 <div class="cursor" bind:this={cursorRef}></div>
-
 <div class="box-enter"></div>
-<section class="content">
-  <nav>
-    <ul>
-      <li><a href="/" on:mouseenter={navLinkMouseEnter} on:mouseleave={navLinkMouseLeave}>Home</a></li>
-      <li><a href="/about" on:mouseenter={navLinkMouseEnter} on:mouseleave={navLinkMouseLeave}>About</a></li>
-      <li><a href="/contact" on:mouseenter={navLinkMouseEnter} on:mouseleave={navLinkMouseLeave}>Contact</a></li>
-    </ul>
-  </nav>
+<nav
+  style={
+    `background-color: ${scrollYVal > 0 ? 'var(--color-pastel-2)' : 'var(--color-pastel-1)'};` +
+    `border-color: ${scrollYVal > 0 ? 'var(--color-pastel-3)' : 'var(--color-pastel-1)'};`
+  }>
+  <ul>
+    <li><a href="/" on:mouseenter={navLinkMouseEnter} on:mouseleave={navLinkMouseLeave}>Home</a></li>
+    <li><a href="/about" on:mouseenter={navLinkMouseEnter} on:mouseleave={navLinkMouseLeave}>About</a></li>
+    <li><a href="/contact" on:mouseenter={navLinkMouseEnter} on:mouseleave={navLinkMouseLeave}>Contact</a></li>
+  </ul>
+</nav>
 
-  <main>
-    <section class="section-hero">
-      <h1 class="hero-title" on:mouseenter={enlargeCursor} on:mouseleave={resetCursor}>CALCO.DEV</h1>
-    </section>
-  </main>
+<main>
+  <section class="section hero">
+    <h1 class="hero-title" on:mouseenter={enlargeCursor} on:mouseleave={resetCursor}>CALCO.DEV</h1>
+  </section>
 
-  <footer>
-    <span on:mouseenter={enlargeCursor} on:mouseleave={resetCursor}>made by <strong>Calcopod</strong></span>
-  </footer>
-</section>
+  <section class="section flex">
+    <div class="flex-1">
+      <h1 class="section-heading">Pro Dev Man</h1>
+      <p class="section-desc">
+        See that? That is me. Why? Because. <br/>
+        I am very a pro developer man. In the words of dm: <br/> <br/> 
+        "Give me barometru cuz they call me Pascal." <br/> 
+        - DM, 2022
+      </p>
+    </div>
+    <div class="flex-1 center">
+      <img 
+      class="section-image"
+      src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+      alt="Me"
+      on:mouseenter={enlargeCursor}
+      on:mouseleave={resetCursor}
+    />
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span on:mouseenter={enlargeCursor} on:mouseleave={resetCursor}>made by <strong>Calcopod</strong></span>
+</footer>
 
 <style>
   :root {
@@ -180,10 +218,6 @@
     --color-pastel-2: #e3d5ca; /* 227 213 202 */
     --color-pastel-1: #f5ebe0; /* 245 235 224 */
     --color-pastel-0: #fffefc; /* 255 254 252 */
-
-    /*
-    pastel 1 - primary 3
-    */
 
     --color-primary-3: #22223b; /* 34 34 59 */
     --color-primary-2: #4a4e69; /* 74 78 105 */
@@ -196,7 +230,7 @@
 
   :global(body) {
     user-select: none;
-    overflow: hidden;
+    overflow-x: hidden;
   }
 
   .cursor {
@@ -216,7 +250,7 @@
   }
 
   .box-enter {
-    background-color: var(--color-pastel-0); 
+    background-color: var(--color-primary-3); 
     position: absolute;
 
     left: 50%;
@@ -230,23 +264,18 @@
     height: 0.1px;
   }
 
-  .content {
-    height: 100vh;
-    width: 100vw;
-    background-color: var(--color-pastel-1);
-
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-
-    overflow: hidden;
-  }
-
   nav {
     width: 80vw;
     padding-left: 10vw;
-    padding-right: 10vh;
+    padding-right: 10vw;
+
+    position: sticky;
+    top: 0;
+
+    transition: background-color 1s ease-out, border-color 1s ease-out;
+
+    border-bottom: 10px solid;
+    z-index: 999;
 
     height: 10vh;
   }
@@ -270,7 +299,7 @@
   }
 
   nav ul li a {
-    color: var(--color-secondary-3);
+    color: var(--color-secondary-1);
     font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -284,18 +313,21 @@
   main {
     width: 80vw;
     padding-left: 10vw;
-    padding-right: 10vh;
+    padding-right: 10vw;
+
+    background-color: var(--color-pastel-1);
   }
 
-  .section-hero {
+  .section {
     height: 80vh;
     width: 100%;
-    
+  }
+
+  .section.hero {
     display: flex;
     justify-content: center;
     align-items: center;
   }
-
   .hero-title {
     color: var(--color-primary-3);
     font-size: 5rem;
@@ -315,5 +347,39 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .flex-1 {
+    flex: 1;
+  }
+
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .section-heading {
+    color: var(--color-primary-3);
+    font-size: 3rem;
+    font-weight: 700;
+  }
+
+  .section-desc {
+    color: var(--color-primary-1);
+    font-size: 0.8rem;
+    font-weight: 400;
+  }
+
+  .section-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 </style>
