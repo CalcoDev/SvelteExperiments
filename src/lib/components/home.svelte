@@ -22,6 +22,13 @@
     })
 
     const title = new SplitType(".title");
+    tl.from(title.chars, {
+      duration: 2,
+      opacity: 0,
+      y: 100,
+      stagger: 0.1,
+      ease: "power4.out",
+    }, "+=1");
 
     tl.play();
   });
