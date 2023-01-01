@@ -46,6 +46,8 @@
     let footerTl = gsap.timeline();
     let heroTl = gsap.timeline();
 
+    let wobbleTl = gsap.timeline();
+
     boxTl.from(boxEnterRef, {
       duration: 1.5,
       width: 'max(100vw, 100vh)',
@@ -82,10 +84,28 @@
       ease: "power4.out",
     });
 
+    title.chars.forEach((char, i) => {
+      const tl = gsap.timeline({ repeat: -1, yoyo: true });
+      tl.to(char, {
+        duration: 0.75,
+        y: '+=25',
+        repeat: -1,
+        yoyo: true,
+      })
+      tl.to(char, {
+        duration: 0.75,
+        y: '-=25',
+        repeat: -1,
+        yoyo: true,
+      })
+      wobbleTl.add(tl, i * 0.1);
+    })
+
     masterTl.delay(0.5);
     masterTl.add(boxTl);
     masterTl.add(heroTl);
     masterTl.add([navTl, footerTl]);
+    masterTl.add(wobbleTl)
     masterTl.play();
   });
 </script>
@@ -134,6 +154,11 @@
     --color-secondary-1: #588157; /* 88 129 87 */
   }
 
+  :global(body) {
+    user-select: none;
+    overflow: hidden;
+  }
+
   .cursor {
     position: absolute;
     top: 0px;
@@ -142,7 +167,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: var(--color-primary-3);
+    background-color: #fff;
 
     z-index: 1000;
     pointer-events: none;
