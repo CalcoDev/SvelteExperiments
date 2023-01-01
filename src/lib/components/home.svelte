@@ -7,13 +7,25 @@
 
   import SplitType from 'split-type'
 
-  let boxEnter;
-  let heroTitle;
+  let boxEnterRef;
+  let heroTitleRef;
   
-  let nav;
-  let footer;
+  let navRef;
+  let footerRef;
+  
+  let cursorRef;
 
   onMount(() => {
+    const setCursorX = gsap.quickTo(cursorRef, "x", {duration: 0.6, ease: "power3"});
+    const setCursorY = gsap.quickTo(cursorRef, "y", {duration: 0.6, ease: "power3"}); 
+    function handleMousemove(e) {
+      setCursorX(e.clientX);
+      setCursorY(e.clientY);
+    }
+
+    gsap.set(cursorRef, { xPercent: -50, yPercent: -50 });
+    document.addEventListener("mousemove", handleMousemove);
+
     gsap.registerPlugin(ScrollTrigger, TextPlugin);
 
     let masterTl = gsap.timeline();
@@ -23,34 +35,34 @@
     let footerTl = gsap.timeline();
     let heroTl = gsap.timeline();
 
-    boxTl.from(boxEnter, {
+    boxTl.from(boxEnterRef, {
       duration: 1.5,
       width: 'max(100vw, 100vh)',
       height: 'max(100vw, 100vh)',
       rotation: 180,
       ease: "bounce.out",
     })
-    boxTl.to(boxEnter, {
+    boxTl.to(boxEnterRef, {
       duration: 0.01,
       width: 0,
       height: 0,
     })
 
-    navTl.from(nav, {
+    navTl.from(navRef, {
       duration: 1,
       opacity: 0,
       y: -100,
       ease: "power4.out",
     });
 
-    footerTl.from(footer, {
+    footerTl.from(footerRef, {
       duration: 1,
       opacity: 0,
       y: 100,
       ease: "power4.out",
     });
 
-    const title = new SplitType(heroTitle);
+    const title = new SplitType(heroTitleRef);
     heroTl.from(title.chars, {
       duration: 2,
       opacity: 0,
@@ -67,10 +79,46 @@
   });
 </script>
 
-<div class="box-enter" bind:this={boxEnter}></div>
-<div class=""></div>
+
+<svg class="cursor" bind:this={cursorRef} width='100px' height='100px'>
+  <defs>
+    <filter id="color-replace" color-interpolation-filters="sRGB">
+    <!-- <feComponentTransfer>
+        <feFuncR type="discrete" tableValues="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0" />
+        <feFuncG type="discrete" tableValues="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" />
+        <feFuncB type="discrete" tableValues="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" />
+      </feComponentTransfer>
+
+      <feColorMatrix type="matrix" values="1 0 0 0 0
+      0 1 0 0 0
+      0 0 1 0 0
+      1 1 1 1 -3" result="selectedColor"/>
+
+      <feFlood flood-color="#22223b"/>
+      <feComposite operator="in" in2="selectedColor"/>
+      <feComposite operator="over" in2="SourceGraphic"/> -->
+
+      <!-- <feColorMatrix in="SourceGraphic" type="hueRotate" values="60"/> -->
+
+      <feComponentTransfer>
+        <feFuncR type="discrete" tableValues="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0" />
+        <feFuncG type="discrete" tableValues="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" />
+        <feFuncB type="discrete" tableValues="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" />
+      </feComponentTransfer>
+      <feColorMatrix type="matrix" values="1 0 0 0 0
+      0 1 0 0 0
+      0 0 1 0 0
+      1 1 1 1 -3" result="selectedColor"/>
+      <feFlood flood-color="#22223b"/>
+      <feComposite operator="in" in2="selectedColor"/>
+      <feComposite operator="over" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="box-enter" bind:this={boxEnterRef}></div>
 <section class="content">
-  <nav bind:this={nav}>
+  <nav bind:this={navRef}>
     <ul>
       <li><a href="/">Home</a></li>
       <li><a href="/about">About</a></li>
@@ -80,29 +128,46 @@
 
   <main>
     <section class="section-hero">
-      <h1 class="hero-title" bind:this={heroTitle}>CALCO.DEV</h1>
+      <h1 class="hero-title" bind:this={heroTitleRef}>CALCO.DEV</h1>
     </section>
   </main>
 
-  <footer bind:this={footer}>
+  <footer bind:this={footerRef}>
     <span>made by <strong>Calcopod</strong></span>
   </footer>
 </section>
 
 <style>
   :root {
-    --color-paster-3: #d5bdaf;
-    --color-pastel-2: #e3d5ca;
-    --color-pastel-1: #f5ebe0;
-    --color-pastel-0: #fffefc;
+    --color-pastel-3: #d5bdaf; /* 213 189 175 */
+    --color-pastel-2: #e3d5ca; /* 227 213 202 */
+    --color-pastel-1: #f5ebe0; /* 245 235 224 */
+    --color-pastel-0: #fffefc; /* 255 254 252 */
 
-    --color-primary-3: #22223b;
-    --color-primary-2: #4a4e69;
-    --color-primary-1: #9a8c98;
+    /*
+    pastel 1 - primary 3
+    */
+
+    --color-primary-3: #22223b; /* 34 34 59 */
+    --color-primary-2: #4a4e69; /* 74 78 105 */
+    --color-primary-1: #9a8c98; /* 154 140 152 */
     
-    --color-secondary-3: #344e41;
-    --color-secondary-2: #3a5a40;
-    --color-secondary-1: #588157;
+    --color-secondary-3: #344e41; /* 52 78 65 */
+    --color-secondary-2: #3a5a40; /* 58 90 64 */
+    --color-secondary-1: #588157; /* 88 129 87 */
+  }
+
+  .cursor {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+
+    z-index: 1000;
+    pointer-events: none;
+
+    /* Invert all colours behind it using a backdrop filter*/
+    /* filter: url("#color-replace"); */
+    backdrop-filter: url("#color-replace");
   }
 
   .box-enter {
@@ -160,7 +225,7 @@
   }
 
   nav ul li a {
-    color: var(--color-primary-3);
+    color: var(--color-secondary-3);
     font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -169,10 +234,6 @@
     text-align: center;
 
     transition: all 0.3s ease-in-out;
-  }
-
-  nav ul li a:hover {
-    color: var(--color-primary-2);
   }
 
   main {
