@@ -1,7 +1,6 @@
 <script>
-  import { gsap } from "gsap";
-  import { ScrollTrigger } from "gsap/ScrollTrigger";
-  import { TextPlugin } from "gsap/TextPlugin";
+  import { gsap } from 'gsap/dist/gsap.js';
+  import { ScrollTrigger } from 'gsap/dist/ScrollTrigger.js';
 
 	import { onMount } from "svelte";
 
@@ -14,6 +13,8 @@
   let setCursorX;
   let setCursorY;
   let setCursorScale;
+
+  gsap.registerPlugin(ScrollTrigger);
 
   onMount(() => {
     setCursorX = gsap.quickTo(cursorRef, "x", {duration: 0.3, ease: "power3"});
@@ -38,8 +39,7 @@
     document.addEventListener("mousedown", () => setCursorScale(2));
     document.addEventListener("mouseup", () => setCursorScale(1));
 
-    gsap.registerPlugin(ScrollTrigger, TextPlugin);
-
+  
     let masterTl = gsap.timeline();
     let boxTl = gsap.timeline();
     
@@ -119,6 +119,18 @@
     navLinks.forEach((link) => {
       new SplitType(link);
     })
+
+    gsap.from(".binder", {
+      duration: 1,
+      opacity: 0,
+      scrollTrigger: {
+        trigger: ".binder",
+        start: "top center",
+        end: "bottom center",
+        scrub: true,
+        markers: true,
+      }
+    })
   });
 
   function wobbleSelf(e) {
@@ -186,7 +198,7 @@
     <h1 class="hero-title" on:mouseenter={enlargeCursor} on:mouseleave={resetCursor}>CALCO.DEV</h1>
   </section>
 
-  <section class="section flex">
+  <section class="section flex binder">
     <div class="flex-1">
       <h1 class="section-heading">Pro Dev Man</h1>
       <p class="section-desc">
