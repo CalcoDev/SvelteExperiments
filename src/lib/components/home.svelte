@@ -1,6 +1,6 @@
 <script>
-  import { gsap } from 'gsap/dist/gsap.js';
-  import { ScrollTrigger } from 'gsap/dist/ScrollTrigger.js';
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 	import { onMount } from "svelte";
 
@@ -14,9 +14,9 @@
   let setCursorY;
   let setCursorScale;
 
-  gsap.registerPlugin(ScrollTrigger);
-
   onMount(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
     setCursorX = gsap.quickTo(cursorRef, "x", {duration: 0.3, ease: "power3"});
     setCursorY = gsap.quickTo(cursorRef, "y", {duration: 0.3, ease: "power3"}); 
     setCursorScale = (scl, dur) => gsap.to(cursorRef, {duration: dur ? dur : 0.15, scale: scl, ease: "power3"});
@@ -120,17 +120,31 @@
       new SplitType(link);
     })
 
-    gsap.from(".binder", {
-      duration: 1,
-      opacity: 0,
-      scrollTrigger: {
-        trigger: ".binder",
-        start: "top center",
-        end: "bottom center",
-        scrub: true,
-        markers: true,
-      }
-    })
+    // gsap.from(".binder h1, p", {
+    //   duration: 1,
+    //   opacity: 0,
+    //   x: '-100%',
+    //   scrollTrigger: {
+    //     trigger: ".binder",
+    //     start: "top center",
+    //     end: "bottom center",
+    //     scrub: true,
+    //     markers: true,
+    //     pin: true
+    //   }
+    // });
+    // gsap.from(".binder img", {
+    //   duration: 1,
+    //   opacity: 0,
+    //   x: '100%',
+    //   scrollTrigger: {
+    //     trigger: ".binder",
+    //     start: "top center",
+    //     end: "center center",
+    //     scrub: true,
+    //     markers: true,
+    //   }
+    // });
   });
 
   function wobbleSelf(e) {
@@ -198,7 +212,7 @@
     <h1 class="hero-title" on:mouseenter={enlargeCursor} on:mouseleave={resetCursor}>CALCO.DEV</h1>
   </section>
 
-  <section class="section flex binder">
+  <section class="section flex screen-height-2 binder">
     <div class="flex-1">
       <h1 class="section-heading">Pro Dev Man</h1>
       <p class="section-desc">
@@ -210,12 +224,12 @@
     </div>
     <div class="flex-1 center">
       <img 
-      class="section-image"
-      src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-      alt="Me"
-      on:mouseenter={enlargeCursor}
-      on:mouseleave={resetCursor}
-    />
+        class="section-image"
+        src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+        alt="Me"
+        on:mouseenter={enlargeCursor}
+        on:mouseleave={resetCursor}
+      />
     </div>
   </section>
 </main>
@@ -351,7 +365,7 @@
   }
 
   footer {
-    width: 100vw;
+    width: 80vw;
     padding-left: 10vw;
     padding-right: 10vw;
     height: 10vh;
@@ -365,8 +379,6 @@
 
   .flex {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
 
   .flex-1 {
@@ -391,9 +403,13 @@
     font-weight: 400;
   }
 
+  .screen-height-2 {
+    height: 160vh;
+  }
+
   .section-image {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 16/9;
     object-fit: cover;
   }
 </style>
