@@ -339,14 +339,16 @@
   }
 
   footer {
-    width: 80vw;
+    width: 100vw;
     padding-left: 10vw;
-    padding-right: 10vh;
+    padding-right: 10vw;
     height: 10vh;
 
     display: flex;
     justify-content: center;
     align-items: center;
+
+    background-color: var(--color-pastel-1);
   }
 
   .flex {
